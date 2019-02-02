@@ -1,18 +1,62 @@
 import {AppBackend} from './appBackend.js';
+
 export class TableUsers {
+    // get({search, startPage, limit}){
+    //
+    //
+    // }
     constructor(users) {
         this.users = users;
-        const appBackend = new AppBackend();
-        document.addEventListener('click', (e)=>{
-           if (e.target .matches('.delete_button')){
-               appBackend.delete(e.target.dataset.id)
-           }
+        this.page = 0;
+        this.pageSize = 10;
+        this.appBackend = new AppBackend();
+
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.delete_button')) {
+                const userId = e.target.dataset.id;
+                this.deleteUser(userId);
+            }
         });
+
+        [...document.getElementsByClassName('button_previous')].forEach(
+            btn => {
+                btn.onclick = this.prevPage.bind(this);
+            });
+        [...document.getElementsByClassName('button_next')].forEach(
+            btn => {
+                btn.onclick = this.nextPage.bind(this);
+            });
+    }
+
+    deleteUser(userId) {
+        this.appBackend.delete(userId)
+            .then(_ => {
+                this.users = this.users.filter(u => u.id !== userId);
+                this.render();
+            });
+    }
+
+    prevPage() {
+        this.page--;
+        this.render();
+    }
+
+    nextPage() {
+        this.page++;
+        this.render();
+    }
+
+    getUsers() {
+        let filteredUsers = this.users.slice();
+
+        filteredUsers = filteredUsers.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+
+        return filteredUsers;
     }
 
     render() {
-        document.body.innerHTML = `
-         <table class="table table-dark">
+        document.getElementById('table_base').innerHTML = `
+         <table class="table table-dark table_size">
   <thead>
     <tr>
       <th scope="col">Id</th>
@@ -22,14 +66,28 @@ export class TableUsers {
     </tr>
   </thead>
   <tbody>
+  <tr>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><button class="button_add" ></button></td>
+</tr>
     ${this.getUsersMarkup()}
+    
   </tbody>
-</table> `
+</table> `;
+
+        const toCount = (this.page + 1) * this.pageSize;
+        const isLastPage = this.users.length < toCount;
+
+        document.getElementById("paging-info").innerText = `Showing ${this.page * this.pageSize + 1} to ${(isLastPage ? this.users.length : toCount)} of ${this.users.length} entries`;
     }
 
     getUsersMarkup() {
-        return this.users.map((user) => {
+        return this.getUsers().map((user) => {
             return `<tr>
+  
                 <td> ${user.id} </td>
                 <td>${user.name} </td>
                 <td> ${user.createdAt} </td>

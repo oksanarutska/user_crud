@@ -1,0 +1,30 @@
+
+.table{
+    width: 90%!important;
+    margin: 0 auto;
+}
+.inf_wrapper{
+    display: flex;
+    justify-content: space-between;
+    margin: 50px auto;
+    width: 90%;
+
+
+}
+.button_page{
+    background-color: white;
+    border: gray;
+}
+.button_page:hover{
+    background-color: #22ebff;
+    cursor: pointer;
+}
+.button_add{
+    width: 100px;
+    height: 30px;
+    background-color: green;
+}
+.button_add:hover{
+    cursor: pointer;
+    background-color: red;
+}
