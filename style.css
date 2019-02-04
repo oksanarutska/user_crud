@@ -19,12 +19,3 @@
     background-color: #22ebff;
     cursor: pointer;
 }
-.button_add{
-    width: 100px;
-    height: 30px;
-    background-color: green;
-}
-.button_add:hover{
-    cursor: pointer;
-    background-color: red;
-}

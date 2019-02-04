@@ -1,20 +1,33 @@
 import {AppBackend} from './appBackend.js';
 
 export class TableUsers {
-    // get({search, startPage, limit}){
-    //
-    //
-    // }
+
     constructor(users) {
         this.users = users;
         this.page = 0;
         this.pageSize = 10;
+        this.search = '';
         this.appBackend = new AppBackend();
 
         document.addEventListener('click', (e) => {
             if (e.target.matches('.delete_button')) {
                 const userId = e.target.dataset.id;
                 this.deleteUser(userId);
+            }
+
+        });
+
+        document.getElementById("count_users").addEventListener("change", (event) => {
+            this.pageSize = event.target.value;
+            this.render();
+        });
+
+
+        document.getElementById("users_search").addEventListener("keyup", (event) => {
+            // 13 - 'enter' key
+            if (event.which === 13) {
+                this.search = event.target.value;
+                this.render();
             }
         });
 
@@ -28,6 +41,7 @@ export class TableUsers {
             });
     }
 
+
     deleteUser(userId) {
         this.appBackend.delete(userId)
             .then(_ => {
@@ -35,6 +49,7 @@ export class TableUsers {
                 this.render();
             });
     }
+
 
     prevPage() {
         this.page--;
@@ -49,7 +64,11 @@ export class TableUsers {
     getUsers() {
         let filteredUsers = this.users.slice();
 
+        filteredUsers = filteredUsers.filter(u => {
+            return u.name.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+        });
         filteredUsers = filteredUsers.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+
 
         return filteredUsers;
     }
@@ -67,11 +86,13 @@ export class TableUsers {
   </thead>
   <tbody>
   <tr>
-  <td><input></td>
-  <td><input></td>
-  <td><input></td>
-  <td><input></td>
-  <td><button class="button_add" ></button></td>
+  <form id="form">
+  <td><input class="id" type="number"></td>
+  <td><input class="name" type="text"></td>
+  <td><input class="data" type="number"></td>
+  <td><input class='email' type="email"></td>
+  <td><button class="btn btn-success" id="add_button" >Add</button></td>
+  </form> 
 </tr>
     ${this.getUsersMarkup()}
     
@@ -82,6 +103,22 @@ export class TableUsers {
         const isLastPage = this.users.length < toCount;
 
         document.getElementById("paging-info").innerText = `Showing ${this.page * this.pageSize + 1} to ${(isLastPage ? this.users.length : toCount)} of ${this.users.length} entries`;
+
+        document.getElementById('add_button').addEventListener('click', (add) => {
+            var user = {
+                name: document.querySelector('.name').value,
+                email: document.querySelector('.email').value,
+            };
+            this.appBackend.create(user)
+                .then(async (response) => {
+                    const addedUser = await response.json();
+                    this.users.push(addedUser);
+                    this.render();
+                });
+
+
+        });
+
     }
 
     getUsersMarkup() {

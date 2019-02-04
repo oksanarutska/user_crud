@@ -1,6 +1,10 @@
 export class AppBackend {
+    constructor() {
+        this.baseUrl = 'https://5bf417c491c25b0013a3b9a2.mockapi.io'
+    }
+
     get() {
-        return fetch(' https://5bf417c491c25b0013a3b9a2.mockapi.io/users')
+        return fetch(`${this.baseUrl}/users`)
             .then(function (response) {
                 return response.json();
             })
@@ -17,7 +21,7 @@ export class AppBackend {
         });
     }
 
-    delete(id){
+    delete(id) {
         return fetch(`https://5bf417c491c25b0013a3b9a2.mockapi.io/users/${id}`, {
             method: 'DELETE',
             headers: {
@@ -27,4 +31,14 @@ export class AppBackend {
         });
     }
 }
+
+// constructor(){
+//     this.baseUrl='https://5bf417c491c25b0013a3b9a2.mockapi.io'
+// }
+// get({limit=10}) {
+//     return fetch(`${this.baseUrl}/users?limit=${limit}`)
+//         .then(function (response) {
+//             return response.json();
+//         })
+// }
 
